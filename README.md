@@ -1,174 +1,175 @@
-# DeSpeed 测速脚本
+# OpenLedger 自动化工具
 
-[![Node Version](https://img.shields.io/badge/node-%3E%3D16.13.2-brightgreen.svg)](https://nodejs.org)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-```
    ██╗  ██╗██╗ █████╗  ██████╗    ██╗     ██╗███╗   ██╗
    ╚██╗██╔╝██║██╔══██╗██╔═══██╗   ██║     ██║████╗  ██║
     ╚███╔╝ ██║███████║██║   ██║   ██║     ██║██╔██╗ ██║
     ██╔██╗ ██║██╔══██║██║   ██║   ██║     ██║██║╚██╗██║
    ██╔╝ ██╗██║██║  ██║╚██████╔╝   ███████╗██║██║ ╚████║
    ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝ ╚═════╝    ╚══════╝╚═╝╚═╝  ╚═══╝
-```
 
-这是一个使用 NDT7 协议的 DeSpeed 测速脚本，支持在 VPS 服务器上运行。本指南将帮助新手用户快速上手使用该脚本。
+                    @YOYOMYOYOA - 小林
+
+## 项目说明
+
+OpenLedger 自动化工具，用于自动维护连接和领取奖励。
+
+- 官方网站：[OpenLedger](https://testnet.openledger.xyz/?referral_code=7kbrlkgppu)
+
+## 获取钱包地址
+
+1. 访问 [OpenLedger](https://testnet.openledger.xyz/?referral_code=7kbrlkgppu)
+2. 连接钱包（支持 MetaMask 等）
+3. 在仪表盘页面可以看到你的钱包地址
 
 ## 功能特点
 
-- ✨ 自动化测速上报
-- 🔄 支持自定义测速间隔
-- 🔒 支持 HTTP/SOCKS 代理
-- 💻 适配 VPS 环境
-- 🛡️ 内存占用优化
-- 🌍 自动随机位置
+- **自动发送心跳包**
+- **自动连接/重连节点**
+- **自动领取每日奖励**
+- **支持多账户管理**
+- **支持代理使用 (HTTP/SOCKS)**
 
-## 快速开始
+## VPS 部署教程
 
-### 1. 环境要求
+### 1. 环境准备
 
-- Node.js >= 16.13.2
-- 512MB 以上内存
-- Ubuntu/Debian/CentOS 系统
-
-### 2. 安装依赖
+首先需要在 VPS 上安装 Node.js 环境：
 
 ```bash
-# 安装 Node.js（Ubuntu/Debian）
-curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+# 更新系统包
+apt update
+apt upgrade -y
+
+# 安装 Node.js 和 npm (Ubuntu/Debian)
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 apt install -y nodejs
 
-# 或 CentOS/RHEL
-curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
-yum install -y nodejs
+# 安装screen（用于后台运行）
+apt install screen -y
 
-# 创建工作目录
-mkdir despeed && cd despeed
-
-# 安装项目依赖
-npm init -y
-npm install node-fetch@2 https-proxy-agent socks-proxy-agent ws
+# 验证安装
+node --version
+npm --version
 ```
 
-### 3. 配置准备
-
-1. [注册 DeSpeed 账号](https://app.despeed.net/register?ref=2kNPSl8sHTNG)
-2. 准备代理信息（可选，格式：`IP:端口:用户名:密码`）
-3. 获取登录令牌（两种方法）：
-
-#### 方法一：从网络请求获取（推荐）
-1. 访问 [DeSpeed](https://app.despeed.net) 并登录您的账号
-2. 按 F12 打开浏览器开发者工具（或右键点击页面 → 检查）
-3. 切换到 Network（网络）标签页
-4. 在过滤器中输入 `dashboard-stats` 或 `api` 来筛选请求
-5. 在右侧找到任意一个请求（例如：`/v1/api/dashboard-stats`）
-6. 点击该请求，在右侧面板中找到 Headers（标头）部分
-7. 在 Request Headers（请求标头）中找到 `authorization` 字段
-8. 复制 `Bearer ` 后面的内容（示例：`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxx...`）
-
-> 提示：如果看不到请求，可以刷新页面后再观察
-
-#### 方法二：从本地存储获取
-1. 访问 [DeSpeed](https://app.despeed.net) 并登录您的账号
-2. 按 F12 打开开发者工具（或右键点击页面 → 检查）
-3. 切换到 Application（应用程序）标签页
-   - Chrome：点击 Application → Local Storage
-   - Firefox：点击 Storage → Local Storage
-   - Edge：点击 Application → Local Storage
-4. 在左侧边栏找到 `https://app.despeed.net`
-5. 在右侧的键值对列表中找到 `token` 项
-6. 双击值部分，全选并复制令牌内容
-
-> 注意：令牌格式说明
-> - 以 `eyJ` 开头的一长串字符
-> - 通常包含两个点号 (.)
-> - 长度大约在 150-250 字符之间
-> - 示例：`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Njc1NSwiZW1haWwiOiJ...`
-
-### 4. 运行脚本
+### 2. 下载项目
 
 ```bash
-# 创建 Screen 会话
-screen -S despeed
+# 克隆项目
+git clone https://github.com/mumumusf/openledger.git
 
-# 启动脚本
-node bot.js
+# 进入项目目录
+cd openledger
 
-# 后台运行（Ctrl+A 然后按 D）
-# 重新连接：screen -r despeed
+# 安装依赖
+npm install
 ```
 
-## 常见问题
+### 3. 配置程序
 
-<details>
-<summary>1. 如何检查安装是否正确？</summary>
+有两种运行方式：
+
+#### 方式一：直接运行（推荐新手使用）
+```bash
+# 运行程序
+node main.js
+
+# 根据提示输入钱包地址和代理配置
+```
+
+#### 方式二：配置文件运行
+1. 创建钱包配置文件：
+```bash
+# 创建并编辑钱包文件
+nano wallets.txt
+
+# 一行一个钱包地址，例如：
+# 0xDE0852C269836D2Adadd5cBdBC8f570A9eb0A3F5
+# 0x1234...
+```
+
+2. 如果需要使用代理，创建代理配置文件：
+```bash
+# 创建并编辑代理文件
+nano proxy.txt
+
+# 一行一个代理，格式：ip:port:username:password
+# 例如：91.124.222.32:41768:user:pass
+```
+
+### 4. 后台运行
+
+有两种方式可以在后台运行程序：
+
+#### 方式一：使用 screen（推荐）
 
 ```bash
-# 检查 Node.js
-node --version  # 应 >= 16.13.2
+# 创建新的 screen 会话
+screen -S openledger
 
-# 检查依赖
-npm list
+# 在 screen 中运行程序
+node main.js
+
+# 按 Ctrl+A 然后按 D 将程序放入后台
+
+# 重新连接到程序
+screen -r openledger
+
+# 查看所有 screen 会话
+screen -ls
+
+# 结束程序：重新连接后按 Ctrl+C
 ```
-</details>
 
-<details>
-<summary>2. Token 相关问题</summary>
+#### 方式二：使用 nohup
 
-- 确保复制完整的 token
-- token 有效期一般为 7 天
-- 如果提示无效请重新获取
-- 注意不要泄露你的 token
-</details>
+```bash
+# 后台运行并将输出保存到日志文件
+nohup node main.js > output.log 2>&1 &
 
-<details>
-<summary>3. 代理连接失败？</summary>
+# 查看程序运行状态
+ps aux | grep node
 
-- 检查代理格式是否正确
-- 确认代理是否可用
-- 检查网络连接
-</details>
+# 查看日志
+tail -f output.log
 
-<details>
-<summary>4. 测速失败或速度异常？</summary>
+# 结束程序
+pkill -f "node main.js"
+```
 
-- 检查服务器带宽
-- 确认防火墙设置
-- 尝试更换测速服务器
-- 检查代理速度（如果使用代理）
-</details>
+### 5. 常见问题
 
-## 注意事项
+1. **如何查看日志？**
+   - screen 方式：重新连接到 screen 会话即可看到日志
+   - nohup 方式：使用 `tail -f output.log` 查看日志
 
-- ⚠️ 令牌为重要凭证，请勿泄露
-- 🔄 建议使用 Screen/PM2 运行
-- 💾 定期检查运行状态
-- 🛡️ 建议开启防火墙
+2. **如何安全退出程序？**
+   - screen 方式：重新连接后按 Ctrl+C
+   - nohup 方式：使用 `pkill -f "node main.js"`
+   - 直接运行时：按 Ctrl+C
 
-## 技术支持
+3. **代理连接失败怎么办？**
+   - 检查代理格式是否正确
+   - 确认代理是否可用
+   - 可以尝试使用 `noproxy.js` 不使用代理运行
 
-如遇问题，请提供：
-- 系统信息：`uname -a`
-- Node.js 版本：`node -v`
-- 错误日志
-- 代理配置（如有）
+4. **令牌生成失败怎么办？**
+   - 检查钱包地址是否正确
+   - 确认网络连接是否正常
+   - 如果使用代理，尝试更换代理
 
-## 更新日志
+### 6. 注意事项
 
-- 2024-01-11：初始版本发布
-  - 支持 HTTP/SOCKS 代理
-  - 自动随机位置
-  - NDT7 测速协议
-  - 优化内存占用
-
-## 联系方式
-
-- 作者推特：[@YOYOMYOYOA](https://twitter.com/YOYOMYOYOA)
+- 建议使用代理运行多账户，避免 IP 限制
+- 程序会自动处理断线重连
+- 每9分钟检查一次积分，避免请求过于频繁
+- 每60分钟检查一次奖励，自动领取
+- 确保 VPS 有足够的内存（建议至少 1GB）
 
 ## 免责声明
 
-本程序仅供学习交流使用，使用本程序产生的任何后果由使用者自行承担。
+本程序仅供学习交流使用，请遵守平台的使用条款。使用本程序所产生的任何后果由使用者自行承担。
 
-## License
+## 开源协议
 
-[MIT](LICENSE) 
+本项目采用 [MIT License](LICENSE) 开源协议。

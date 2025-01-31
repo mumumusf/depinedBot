@@ -5,7 +5,7 @@ const logger = {
         const now = new Date().toLocaleString();
 
         const colors = {
-            info: chalk.green,
+            info: chalk.cyanBright,
             warn: chalk.yellow,
             error: chalk.red,
             success: chalk.blue,
@@ -16,7 +16,7 @@ const logger = {
         const levelTag = `[ ${level.toUpperCase()} ]`;
         const timestamp = `[ ${now} ]`;
 
-        const formattedMessage = `${chalk.green("[ OpenLedger ]")} ${chalk.cyanBright(timestamp)} ${color(levelTag)} ${message}`;
+        const formattedMessage = `${chalk.cyanBright("[ DepinedBot ]")} ${chalk.grey(timestamp)} ${color(levelTag)} ${message}`;
 
         let formattedValue = ` ${chalk.green(value)}`;
         if (level === 'error') {

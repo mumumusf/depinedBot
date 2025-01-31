@@ -1,175 +1,165 @@
-# OpenLedger 自动化工具
+# Depined 自动化工具
 
-   ██╗  ██╗██╗ █████╗  ██████╗    ██╗     ██╗███╗   ██╗
-   ╚██╗██╔╝██║██╔══██╗██╔═══██╗   ██║     ██║████╗  ██║
-    ╚███╔╝ ██║███████║██║   ██║   ██║     ██║██╔██╗ ██║
-    ██╔██╗ ██║██╔══██║██║   ██║   ██║     ██║██║╚██╗██║
-   ██╔╝ ██╗██║██║  ██║╚██████╔╝   ███████╗██║██║ ╚████║
-   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝ ╚═════╝    ╚══════╝╚═╝╚═╝  ╚═══╝
-
-                    @YOYOMYOYOA - 小林
-
-## 项目说明
-
-OpenLedger 自动化工具，用于自动维护连接和领取奖励。
-
-- 官方网站：[OpenLedger](https://testnet.openledger.xyz/?referral_code=7kbrlkgppu)
-
-## 获取钱包地址
-
-1. 访问 [OpenLedger](https://testnet.openledger.xyz/?referral_code=7kbrlkgppu)
-2. 连接钱包（支持 MetaMask 等）
-3. 在仪表盘页面可以看到你的钱包地址
+![banner](image.png)
 
 ## 功能特点
 
-- **自动发送心跳包**
-- **自动连接/重连节点**
-- **自动领取每日奖励**
+- **自动 Ping 连接维护**
 - **支持多账户管理**
-- **支持代理使用 (HTTP/SOCKS)**
+- **支持代理配置**
+
+## 获取令牌方法
+
+1. 打开 Depined 仪表板 [https://app.depined.org/dashboard](https://app.depined.org/dashboard)
+2. 使用邮箱登录
+3. 按 F12 打开开发者工具，找到 Application 标签
+4. 在 Local Storage 中找到 `token` 并复制其值
+    ![token](image-1.png)
 
 ## VPS 部署教程
 
-### 1. 环境准备
+### 1. 准备工作
 
-首先需要在 VPS 上安装 Node.js 环境：
+确保你的 VPS 满足以下条件：
+- 操作系统：Ubuntu/Debian/CentOS
+- Node.js 版本 >= 16
+- 内存 >= 1GB
+- 硬盘空间 >= 10GB
+
+### 2. 安装必要软件
 
 ```bash
-# 更新系统包
-apt update
-apt upgrade -y
+# 更新系统
+apt update && apt upgrade -y
 
-# 安装 Node.js 和 npm (Ubuntu/Debian)
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# 安装 Node.js (Ubuntu/Debian)
+curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 apt install -y nodejs
 
-# 安装screen（用于后台运行）
-apt install screen -y
+# 安装 Git
+apt install -y git
 
-# 验证安装
-node --version
-npm --version
+# 安装 Screen（用于后台运行）
+apt install -y screen
 ```
 
-### 2. 下载项目
+### 3. 下载项目
 
 ```bash
 # 克隆项目
-git clone https://github.com/mumumusf/openledger.git
-
-# 进入项目目录
-cd openledger
+git clone https://github.com/mumumusf/depinedBot.git
+cd depinedBot
 
 # 安装依赖
 npm install
 ```
 
-### 3. 配置程序
-
-有两种运行方式：
-
-#### 方式一：直接运行（推荐新手使用）
-```bash
-# 运行程序
-node main.js
-
-# 根据提示输入钱包地址和代理配置
-```
-
-#### 方式二：配置文件运行
-1. 创建钱包配置文件：
-```bash
-# 创建并编辑钱包文件
-nano wallets.txt
-
-# 一行一个钱包地址，例如：
-# 0xDE0852C269836D2Adadd5cBdBC8f570A9eb0A3F5
-# 0x1234...
-```
-
-2. 如果需要使用代理，创建代理配置文件：
-```bash
-# 创建并编辑代理文件
-nano proxy.txt
-
-# 一行一个代理，格式：ip:port:username:password
-# 例如：91.124.222.32:41768:user:pass
-```
-
-### 4. 后台运行
-
-有两种方式可以在后台运行程序：
-
-#### 方式一：使用 screen（推荐）
+### 4. 后台运行设置
 
 ```bash
 # 创建新的 screen 会话
-screen -S openledger
+screen -S depined
 
-# 在 screen 中运行程序
-node main.js
+# 运行程序
+npm run start
 
-# 按 Ctrl+A 然后按 D 将程序放入后台
+# 分离 screen 会话（按 Ctrl+A 然后按 D）
+```
 
-# 重新连接到程序
-screen -r openledger
+### 5. 常用命令
 
+```bash
 # 查看所有 screen 会话
 screen -ls
 
-# 结束程序：重新连接后按 Ctrl+C
-```
-
-#### 方式二：使用 nohup
-
-```bash
-# 后台运行并将输出保存到日志文件
-nohup node main.js > output.log 2>&1 &
-
-# 查看程序运行状态
-ps aux | grep node
-
-# 查看日志
-tail -f output.log
+# 重新连接到 screen 会话
+screen -r depined
 
 # 结束程序
-pkill -f "node main.js"
+# 1. 重新连接到 screen 会话
+# 2. 按 Ctrl+C 停止程序
+# 3. 输入 exit 关闭会话
 ```
 
-### 5. 常见问题
+### 6. 代理设置说明
 
-1. **如何查看日志？**
-   - screen 方式：重新连接到 screen 会话即可看到日志
-   - nohup 方式：使用 `tail -f output.log` 查看日志
+支持两种代理格式：
+- 格式1: `ip:port:username:password`
+- 格式2: `ip:port`
 
-2. **如何安全退出程序？**
-   - screen 方式：重新连接后按 Ctrl+C
-   - nohup 方式：使用 `pkill -f "node main.js"`
-   - 直接运行时：按 Ctrl+C
+示例：
+```
+208.196.127.126:6544:username:password
+```
 
-3. **代理连接失败怎么办？**
-   - 检查代理格式是否正确
-   - 确认代理是否可用
-   - 可以尝试使用 `noproxy.js` 不使用代理运行
+### 7. 运行维护
 
-4. **令牌生成失败怎么办？**
-   - 检查钱包地址是否正确
-   - 确认网络连接是否正常
-   - 如果使用代理，尝试更换代理
+1. **日志查看**
+   ```bash
+   # 实时查看日志
+   tail -f depined.log
+   ```
 
-### 6. 注意事项
+2. **自动重启设置**
+   创建 `restart.sh`:
+   ```bash
+   #!/bin/bash
+   while true; do
+     npm run start
+     sleep 5
+   done
+   ```
+   
+   设置权限并运行：
+   ```bash
+   chmod +x restart.sh
+   screen -S depined ./restart.sh
+   ```
 
-- 建议使用代理运行多账户，避免 IP 限制
-- 程序会自动处理断线重连
-- 每9分钟检查一次积分，避免请求过于频繁
-- 每60分钟检查一次奖励，自动领取
-- 确保 VPS 有足够的内存（建议至少 1GB）
+3. **内存监控**
+   ```bash
+   # 查看内存使用情况
+   free -h
+   
+   # 查看程序占用资源
+   top | grep node
+   ```
+
+### 8. 故障排除
+
+1. **程序无响应**
+   ```bash
+   # 查找并结束所有 Node.js 进程
+   pkill -f node
+   
+   # 重新启动程序
+   screen -S depined
+   npm run start
+   ```
+
+2. **内存占用过高**
+   ```bash
+   # 清理系统缓存
+   sync && echo 3 > /proc/sys/vm/drop_caches
+   ```
+
+3. **网络问题**
+   ```bash
+   # 测试网络连接
+   ping app.depined.org
+   
+   # 查看网络状态
+   netstat -tunlp | grep node
+   ```
 
 ## 免责声明
 
-本程序仅供学习交流使用，请遵守平台的使用条款。使用本程序所产生的任何后果由使用者自行承担。
+- 本脚本仅供学习交流使用
+- 使用本脚本所产生的任何后果由用户自行承担
+- 如果因使用本脚本造成任何损失，作者概不负责
 
-## 开源协议
+## 许可证
 
-本项目采用 [MIT License](LICENSE) 开源协议。
+本项目基于 MIT 许可证开源 - 详见 [LICENSE](LICENSE) 文件
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)

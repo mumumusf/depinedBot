@@ -1,6 +1,6 @@
 # Depined 自动化工具
 
-![banner](image.png)
+
 
 ## 功能特点
 

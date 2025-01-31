@@ -14,7 +14,6 @@
 2. 使用邮箱登录
 3. 按 F12 打开开发者工具，找到 Application 标签
 4. 在 Local Storage 中找到 `token` 并复制其值
-    ![token](image-1.png)
 
 ## VPS 部署教程
 

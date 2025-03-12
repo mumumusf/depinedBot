@@ -6,66 +6,24 @@ const userAgent = randomUseragent.getRandom();
 const headers = {
     'accept': 'application/json',
     'user-agent': userAgent,
-    Origin: "chrome-extension://pjlappmodaidbdjhmhifbnnmmkkicjoc",
-    "Content-Length": 18,
+    'Origin': 'chrome-extension://pjlappmodaidbdjhmhifbnnmmkkicjoc',
+    'Content-Type': 'application/json',
+    "X-Requested-With": "XMLHttpRequest"
 };
 
 const fetchWithTimeout = async (url, options = {}, timeout = 60000) => {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
     try {
-        const response = await fetch(url, { ...options, signal: controller.signal });
+        const response = await fetch(url, { 
+            ...options, 
+            signal: controller.signal
+        });
         clearTimeout(id);
         return response;
     } catch (error) {
         clearTimeout(id);
         throw error;
-    }
-};
-
-export const registerUser = async (email, password, proxy) => {
-    const agent = newAgent(proxy);
-    const url = 'https://api.depined.org/api/user/register';
-    try {
-        const response = await fetchWithTimeout(url, {
-            method: 'POST',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json',
-                "X-Requested-With": "XMLHttpRequest",
-            },
-            body: JSON.stringify({ email, password }),
-            agent,
-        });
-        const data = await response.json();
-        log.info('User registered successfully:', data.message);
-        return data;
-    } catch (error) {
-        log.error('Error registering user:', error.message || error);
-        return null;
-    }
-};
-
-export const loginUser = async (email, password, proxy) => {
-    const agent = newAgent(proxy);
-    const url = 'https://api.depined.org/api/user/login';
-    try {
-        const response = await fetchWithTimeout(url, {
-            method: 'POST',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json',
-                "X-Requested-With": "XMLHttpRequest",
-            },
-            body: JSON.stringify({ email, password }),
-            agent,
-        });
-        const data = await response.json();
-        log.info('User Login successfully:', data.message);
-        return data;
-    } catch (error) {
-        log.error('Error Login user:', error.message || error);
-        return null;
     }
 };
 
@@ -78,64 +36,15 @@ export async function getUserInfo(token, proxy) {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${token}`,
-                "X-Requested-With": "XMLHttpRequest",
             },
             agent,
         });
         return await response.json();
     } catch (error) {
-        log.error('Error fetching user info:', error.message || error);
+        log.error('获取用户信息失败:', error.message || error);
         return null;
     }
 }
-
-export const createUserProfile = async (token, payload, proxy) => {
-    const agent = newAgent(proxy);
-    const url = 'https://api.depined.org/api/user/profile-creation';
-    try {
-        const response = await fetchWithTimeout(url, {
-            method: 'POST',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-                "X-Requested-With": "XMLHttpRequest",
-            },
-            body: JSON.stringify(payload),
-            agent,
-        });
-        const data = await response.json();
-        log.info('Profile created successfully:', payload);
-        return data;
-    } catch (error) {
-        log.error('Error creating profile:', error.message || error);
-        return null;
-    }
-};
-
-export const confirmUserReff = async (token, referral_code, proxy) => {
-    const agent = newAgent(proxy);
-    const url = 'https://api.depined.org/api/access-code/referal';
-    try {
-        const response = await fetchWithTimeout(url, {
-            method: 'POST',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-                "X-Requested-With": "XMLHttpRequest",
-            },
-            body: JSON.stringify({ referral_code }),
-            agent,
-        });
-        const data = await response.json();
-        log.info('Confirm User referral successfully:', data.message);
-        return data;
-    } catch (error) {
-        log.error('Error Confirm User referral:', error.message || error);
-        return null;
-    }
-};
 
 export const getUserRef = async (token, proxy) => {
     const agent = newAgent(proxy);
@@ -146,13 +55,12 @@ export const getUserRef = async (token, proxy) => {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${token}`,
-                "X-Requested-With": "XMLHttpRequest",
             },
             agent,
         });
         return await response.json();
     } catch (error) {
-        log.error('Error fetching referral stats:', error.message || error);
+        log.error('获取推荐统计失败:', error.message || error);
         return null;
     }
 };
@@ -166,13 +74,12 @@ export const getEarnings = async (token, proxy) => {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${token}`,
-                "X-Requested-With": "XMLHttpRequest",
             },
             agent,
         });
         return await response.json();
     } catch (error) {
-        log.error('Error fetching earnings:', error.message || error);
+        log.error('获取收益信息失败:', error.message || error);
         return null;
     }
 };
@@ -186,16 +93,15 @@ export const connect = async (token, proxy) => {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${token}`,
-                "X-Requested-With": "XMLHttpRequest",
             },
             body: JSON.stringify({ connected: true }),
             agent,
         });
         const data = await response.json();
-        log.info('User connected successfully.');
+        log.info('节点连接成功');
         return data;
     } catch (error) {
-        log.error(`Error updating connection: ${error.message}`);
+        log.error(`节点连接失败: ${error.message}`);
         return null;
     }
 };
@@ -209,16 +115,15 @@ export const claimPoints = async (token, proxy) => {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${token}`,
-                "X-Requested-With": "XMLHttpRequest",
             },
             body: JSON.stringify({}),
             agent,
         });
         const data = await response.json();
-        log.info('Points claimed successfully.');
+        log.info('积分领取成功');
         return data;
     } catch (error) {
-        log.error(`Error claiming points: ${error.message}`);
+        log.error(`领取积分失败: ${error.message}`);
         return null;
     }
 };

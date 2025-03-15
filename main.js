@@ -135,7 +135,9 @@ const main = async () => {
     try {
         log.info(`正在为所有账户启动程序: ${tokens.length}`);
 
-        const tasks = tokens.map(async (token, index) => {
+        // 修改为顺序初始化账号，而不是并行
+        for (let index = 0; index < tokens.length; index++) {
+            const token = tokens[index];
             const proxyList = accountProxies[index];
 
             try {
@@ -192,12 +194,15 @@ const main = async () => {
                     }, 1000 * 60 * 60 * 24);
                 }
 
+                // 添加延迟，避免同时初始化太多账号
+                await delay(10); // 每个账号初始化后等待10秒
+
             } catch (error) {
                 log.error(`处理账户 ${index + 1} 时出错: ${error.message}`);
+                // 出错后也等待一段时间再继续下一个账号
+                await delay(5);
             }
-        });
-
-        await Promise.all(tasks);
+        }
     } catch (error) {
         log.error(`主循环出错: ${error.message}`);
     }
